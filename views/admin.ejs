@@ -1,0 +1,87 @@
+<%- include('./partials/header', { user }) %>
+
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Add New Book</h2>
+            <p class="text-gray-600">Add a new book to the library catalog.</p>
+        </div>
+        <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-300">
+            Back to Catalog
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Add Book Form -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">Book Details</h3>
+        </div>
+        <div class="p-6">
+            <form action="/admin/addbook" method="POST">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+                        Title
+                    </label>
+                    <input 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="title" 
+                        name="title" 
+                        type="text" 
+                        placeholder="Book title"
+                        required
+                    >
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="author">
+                        Author
+                    </label>
+                    <input 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="author" 
+                        name="author" 
+                        type="text" 
+                        placeholder="Book author"
+                        required
+                    >
+                </div>
+                
+                <div class="flex items-center justify-end">
+                    <button 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                        type="submit"
+                    >
+                        Add Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin Info Section -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">Admin Information</h3>
+        </div>
+        <div class="p-6">
+            <div class="mb-4">
+                <h4 class="text-lg font-medium text-gray-800">Admin Privileges:</h4>
+                <ul class="list-disc list-inside mt-2 text-gray-600">
+                    <li>Add new books to the library</li>
+                    <li>Edit book information (title, author)</li>
+                    <li>Delete books from the library</li>
+                    <li>View borrower information for all books</li>
+                </ul>
+            </div>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-md text-sm">
+                <p class="text-blue-800 font-medium">Book Management Tips</p>
+                <p class="text-blue-700 mt-2">You can edit or delete books directly from the main catalog page. Use the "Add New Book" form to add new books to the library.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

@@ -1,0 +1,162 @@
+<%- include('./partials/header', { user }) %>
+
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Welcome, <%= user.username %></h2>
+    <p class="text-gray-600">Browse our collection of books and borrow what interests you.</p>
+</div>
+
+<!-- My Borrowed Books Section (only for non-admin users) -->
+<% if (user.role !== 'admin' && myBooks && myBooks.length > 0) { %>
+<div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200 bg-blue-50">
+        <h3 class="text-xl font-semibold text-blue-800">My Borrowed Books</h3>
+    </div>
+    
+    <!-- My Books Card Grid Layout -->
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% myBooks.forEach(book => { %>
+            <div class="bg-white border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border-blue-200">
+                <!-- Book Cover Placeholder -->
+                <div class="h-48 bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center">
+                    <span class="text-3xl font-bold text-blue-400">📚</span>
+                </div>
+                
+                <!-- Book Info -->
+                <div class="p-4">
+                    <h4 class="font-bold text-lg mb-1 text-gray-800"><%= book.title %></h4>
+                    <p class="text-gray-600 text-sm mb-2">by <%= book.author %></p>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-3">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            Borrowed by You
+                        </span>
+                    </div>
+                    
+                    <!-- Due Date Info -->
+                    <div class="mb-3 text-sm">
+                        <p class="text-gray-600">
+                            Due: <span class="font-medium"><%= book.due_date %></span>
+                        </p>
+                        <% if (book.fine) { %>
+                            <p class="text-red-600 font-medium mt-1">
+                                Fine: $<%= book.fine %>
+                            </p>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Return Button -->
+                    <div class="mt-4">
+                        <form action="/return/<%= book.id %>" method="POST" class="inline">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium text-sm transition-colors duration-300">
+                                Return Book
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Book ID Badge -->
+                <div class="bg-blue-50 px-4 py-2 text-xs font-medium text-blue-600 border-t border-blue-100">
+                    ID: <%= book.id %> • Borrowed on: <%= new Date(book.due_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<% } %>
+
+<!-- All Books Section -->
+<div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-xl font-semibold text-gray-800">Library Catalog</h3>
+        <% if (user.role === 'admin') { %>
+            <a href="/admin" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-300">
+                Add New Book
+            </a>
+        <% } %>
+    </div>
+    
+    <!-- Card Grid Layout -->
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <% books.forEach(book => { %>
+            <div class="bg-white border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                <!-- Book Cover Placeholder -->
+                <div class="h-48 bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center">
+                    <span class="text-3xl font-bold text-gray-400">📚</span>
+                </div>
+                
+                <!-- Book Info -->
+                <div class="p-4">
+                    <h4 class="font-bold text-lg mb-1 text-gray-800"><%= book.title %></h4>
+                    <p class="text-gray-600 text-sm mb-2">by <%= book.author %></p>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-3">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full <%= book.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                            <%= book.status %>
+                        </span>
+                    </div>
+                    
+                    <!-- Borrower Info (if borrowed) - only visible to admins -->
+                    <% if (book.status === 'Borrowed') { %>
+                        <div class="mb-3 text-sm">
+                            <% if (user.role === 'admin') { %>
+                                <p class="text-gray-600">
+                                    Borrowed by: <span class="font-medium"><%= book.borrower_username %></span>
+                                </p>
+                                <p class="text-gray-600">
+                                    Due: <span class="font-medium"><%= book.due_date %></span>
+                                </p>
+                                <% if (book.fine) { %>
+                                    <p class="text-red-600 font-medium mt-1">
+                                        Fine: $<%= book.fine %>
+                                    </p>
+                                <% } %>
+                            <% } else { %>
+                                <p class="text-gray-600 italic">This book is currently unavailable</p>
+                            <% } %>
+                        </div>
+                    <% } %>
+                    
+                    <!-- Action Buttons -->
+                    <div class="mt-4">
+                        <% if (user.role === 'admin') { %>
+                            <!-- Admin Actions: Edit and Delete buttons -->
+                            <div class="flex space-x-2">
+                                <a href="/admin/edit/<%= book.id %>" class="block w-1/2 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium text-sm transition-colors duration-300">
+                                    Edit
+                                </a>
+                                <form action="/admin/delete/<%= book.id %>" method="POST" class="w-1/2" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium text-sm transition-colors duration-300">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        <% } else if (book.status === 'Available') { %>
+                            <!-- Regular User: Borrow Button -->
+                            <form action="/borrow/<%= book.id %>" method="POST" class="inline">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium text-sm transition-colors duration-300">
+                                    Borrow Book
+                                </button>
+                            </form>
+                        <% } else if (book.borrowed_by_user_id === user.id) { %>
+                            <!-- User's Borrowed Book: Return Button -->
+                            <form action="/return/<%= book.id %>" method="POST" class="inline">
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium text-sm transition-colors duration-300">
+                                    Return Book
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Book ID Badge -->
+                <div class="bg-gray-100 px-4 py-2 text-xs font-medium text-gray-500 border-t">
+                    ID: <%= book.id %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>
