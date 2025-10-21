@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const path = require('path');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const db = require('./connection');
 
@@ -28,20 +28,20 @@ db.serialize(() => {
   
   // Create Users table
   db.run(`CREATE TABLE Users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'member'
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'member'
   )`);
   
   // Create Books table
   db.run(`CREATE TABLE Books (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    author TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'Available',
-    borrowed_by_user_id INTEGER,
-    due_date TEXT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'Available',
+    borrowed_by_user_id INT,
+    due_date VARCHAR(20),
     FOREIGN KEY (borrowed_by_user_id) REFERENCES Users(id)
   )`);
   
